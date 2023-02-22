@@ -1,9 +1,10 @@
-import 'package:billiard_score_app/common/router/router.dart';
+import 'package:billiard_score_app/shared/router/router.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'ui/ui.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
