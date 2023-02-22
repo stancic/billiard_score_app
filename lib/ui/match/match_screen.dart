@@ -2,16 +2,11 @@ import 'package:billiard_score_app/ui/common/full_width_elevated_button.dart';
 import 'package:billiard_score_app/ui/match/match_summary_screen.dart';
 import 'package:flutter/material.dart';
 
-class MatchScreen extends StatefulWidget {
+class MatchScreen extends StatelessWidget {
   static const String route = '/match';
 
   const MatchScreen({super.key});
 
-  @override
-  State<MatchScreen> createState() => _MatchScreenState();
-}
-
-class _MatchScreenState extends State<MatchScreen> {
   void _finishGame(BuildContext context) {
     Navigator.of(context).pushReplacementNamed(MatchSummaryScreen.route);
   }
