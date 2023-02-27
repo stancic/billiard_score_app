@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -17,12 +19,20 @@ extension MatchPropertiesMapExtension on MatchPropertiesMap {
   void Function(ValueNotifier<int>, int) get decrementMatchProperty =>
       this['decrementMatchProperty'] as void Function(ValueNotifier<int>, int);
 
+  void Function(Function, int, ValueNotifier<String>) get handleTimer =>
+      this['handleTimer'] as void Function(
+          Function, int, ValueNotifier<String>);
+
+  String Function(int) get formatMatchTime =>
+      this['formatMatchTime'] as String Function(int);
+
   List<DropdownMenuItem<PlayerModel>> Function(List<PlayerModel>)
       get generatePlayerDropdownValues => this['generatePlayerDropdownValues']
           as List<DropdownMenuItem<PlayerModel>> Function(List<PlayerModel>);
 
   List<MatchModel> Function() get getMatches =>
       this['getMatches'] as List<MatchModel> Function();
+
   void Function(Match) get addMatch => this['addMatch'] as void Function(Match);
 }
 
@@ -37,6 +47,35 @@ class MatchProperties {
       return;
     }
     decrementor.value -= decrementBy;
+  }
+
+  void handleTimer({
+    required Function callback,
+    required int startTimeInMinutes,
+    required ValueNotifier<String> gameTime,
+  }) {
+    late Timer timer;
+    int startSeconds = startTimeInMinutes * 60;
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      startSeconds -= 1;
+      if (startSeconds == 0) {
+        callback();
+        timer.cancel();
+      }
+
+      int minutes = startSeconds ~/ 60;
+      int seconds = (startSeconds % 60);
+      gameTime.value =
+          "${minutes.toString().padLeft(2, "0")}:${seconds.toString().padLeft(2, "0")}";
+    });
+  }
+
+  String formatMatchTime(int timeInSeconds) {
+    int sec = timeInSeconds % 60;
+    int min = (timeInSeconds / 60).floor();
+    String minute = min.toString().length <= 1 ? "0$min" : "$min";
+    String second = sec.toString().length <= 1 ? "0$sec" : "$sec";
+    return "$minute : $second";
   }
 
   List<DropdownMenuItem<PlayerModel>> generatePlayerDropdownValues(
@@ -71,6 +110,24 @@ MatchPropertiesMap useMatchProperties([WidgetRef? ref]) {
         matchProperties.decrementMatchProperty(decrementor, decrementBy);
   }
 
+  void Function(Function, int, ValueNotifier<String>) handleTimer() {
+    return (
+      Function callback,
+      int startTimeInMinutes,
+      ValueNotifier<String> gameTime,
+    ) =>
+        matchProperties.handleTimer(
+          callback: callback,
+          startTimeInMinutes: startTimeInMinutes,
+          gameTime: gameTime,
+        );
+  }
+
+  String Function(int) formatMatchTime() {
+    return (int timeInSeconds) =>
+        matchProperties.formatMatchTime(timeInSeconds);
+  }
+
   PlayerList generatePlayerDropdownValues() {
     return (List<PlayerModel> players) =>
         matchProperties.generatePlayerDropdownValues(players);
@@ -89,6 +146,8 @@ MatchPropertiesMap useMatchProperties([WidgetRef? ref]) {
   return {
     'incrementMatchProperty': incrementMatchProperty(),
     'decrementMatchProperty': decrementMatchProperty(),
+    'handleTimer': handleTimer(),
+    'formatMatchTime': formatMatchTime(),
     'generatePlayerDropdownValues': generatePlayerDropdownValues(),
     'getMatches': getMatches(),
     'addMatch': addMatch(),

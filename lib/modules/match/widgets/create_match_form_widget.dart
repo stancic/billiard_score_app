@@ -18,8 +18,8 @@ class CreateMatchFormWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final gameTime = useState(0);
-    final gameScore = useState(0);
+    final maxGameTime = useState(0);
+    final maxGameScore = useState(0);
     final gamePlayers = useState<List<DropdownMenuItem<PlayerModel>>>([]);
     final selectedFirstPlayer = useState<PlayerModel?>(null);
     final selectedSecondPlayer = useState<PlayerModel?>(null);
@@ -29,8 +29,8 @@ class CreateMatchFormWidget extends HookConsumerWidget {
     void startGame() {
       final isInvalid = selectedFirstPlayer.value == null ||
           selectedSecondPlayer.value == null ||
-          gameScore.value == 0 ||
-          gameTime.value == 0;
+          maxGameScore.value == 0 ||
+          maxGameTime.value == 0;
 
       if (isInvalid) return;
 
@@ -38,8 +38,8 @@ class CreateMatchFormWidget extends HookConsumerWidget {
         matchId: DateTime.now().toString(),
         firstPlayer: selectedFirstPlayer.value as PlayerModel,
         secondPlayer: selectedSecondPlayer.value as PlayerModel,
-        gameTime: gameTime.value,
-        gameScore: gameScore.value,
+        maxGameTime: maxGameTime.value,
+        maxGameScore: maxGameScore.value,
       );
 
       matchProperties.addMatch(Match(match: match));
@@ -78,20 +78,20 @@ class CreateMatchFormWidget extends HookConsumerWidget {
             const SizedBox(height: 10),
             IncrementMatchPropertiesWidget(
               title: 'Max. Game Time',
-              gameProperty: gameTime.value,
+              gameProperty: maxGameTime.value,
               incrementGameProperty: () =>
-                  matchProperties.incrementMatchProperty(gameTime, 5),
+                  matchProperties.incrementMatchProperty(maxGameTime, 1),
               decrementGameProperty: () =>
-                  matchProperties.decrementMatchProperty(gameTime, 5),
+                  matchProperties.decrementMatchProperty(maxGameTime, 1),
             ),
             const SizedBox(height: 10),
             IncrementMatchPropertiesWidget(
               title: 'Max. Game Score',
-              gameProperty: gameScore.value,
+              gameProperty: maxGameScore.value,
               incrementGameProperty: () =>
-                  matchProperties.incrementMatchProperty(gameScore, 1),
+                  matchProperties.incrementMatchProperty(maxGameScore, 1),
               decrementGameProperty: () =>
-                  matchProperties.decrementMatchProperty(gameScore, 1),
+                  matchProperties.decrementMatchProperty(maxGameScore, 1),
             ),
             const Spacer(),
             FullWidthElevatedButton(title: 'Add Game', onPressed: startGame)

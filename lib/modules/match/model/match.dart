@@ -4,14 +4,18 @@ class MatchModel {
   final String matchId;
   final PlayerModel firstPlayer;
   final PlayerModel secondPlayer;
-  final int gameTime;
-  final int gameScore;
+  final int maxGameTime;
+  final int maxGameScore;
+  int firstPlayerScore;
+  int secondPlayerScore;
 
   MatchModel({
     required this.matchId,
     required this.firstPlayer,
     required this.secondPlayer,
-    required this.gameTime,
-    required this.gameScore,
+    required this.maxGameTime,
+    required this.maxGameScore,
+    this.firstPlayerScore = 0,
+    this.secondPlayerScore = 0,
   });
 }
