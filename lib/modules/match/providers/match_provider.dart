@@ -24,8 +24,21 @@ class MatchNotifier extends StateNotifier<List<Match>> {
     state = [...state, match];
   }
 
+  MatchModel? getLatestMatch() {
+    if (state.isEmpty) return null;
+    return state.last.match;
+  }
+
   List<MatchModel> getMatches() {
     return state.map((e) => e.match).toList();
+  }
+
+  void setLatestMatchScore(int firstPlayerScore, int secondPlayerScore) {
+    if (state.isEmpty) return;
+    var lastMatch = state.removeLast();
+    lastMatch.match.firstPlayerScore = firstPlayerScore;
+    lastMatch.match.secondPlayerScore = secondPlayerScore;
+    state = [...state, lastMatch];
   }
 }
 
